@@ -24,6 +24,7 @@ public class RobotMap {
 	public static final int SOLENOIDHIGH = 2;
 	public static final int SOLENOIDLOW = 3;
 	public static final int ARMRELAY = 0;
+	public static final int ARMRELAYPT2 = 1;
 	public static final int LIMITSWITCH = 1;
 	public static final int LIMITSWITCH2 = 0;
 	

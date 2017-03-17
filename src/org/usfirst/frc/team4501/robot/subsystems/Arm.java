@@ -19,7 +19,7 @@ public class Arm extends Subsystem {
 	// Put methods for controlling this subsystem
 	// here. Call these from Commands.
 
-	Relay armSolenoid;
+	DoubleSolenoid armSolenoid;
 	Talon armMotor;
 	AnalogPotentiometer pot;
 	DigitalInput bottomSwitch, topSwitch;
@@ -28,7 +28,7 @@ public class Arm extends Subsystem {
 
 	public Arm() {
 		armMotor = new Talon(RobotMap.ARM_MOTOR);
-		armSolenoid = new Relay(RobotMap.ARMRELAY);
+		armSolenoid = new DoubleSolenoid(RobotMap.ARMRELAY, RobotMap.ARMRELAYPT2);
 		pot = new AnalogPotentiometer(RobotMap.POTENT, 360, 30);
 		bottomSwitch = new DigitalInput(RobotMap.LIMITSWITCH);
 		topSwitch = new DigitalInput(RobotMap.LIMITSWITCH2);
@@ -41,11 +41,11 @@ public class Arm extends Subsystem {
 	}
 
 	public void armOpen() {
-		armSolenoid.set(Relay.Value.kForward);
+		armSolenoid.set(DoubleSolenoid.Value.kForward);
 	}
 
 	public void armClose() {
-		armSolenoid.set(Relay.Value.kReverse);
+		armSolenoid.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	public boolean armUp() {
