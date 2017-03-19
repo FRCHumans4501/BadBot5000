@@ -46,13 +46,12 @@ public class DriveTrain extends Subsystem {
 	public static double cameraCenterX = cameraWidth / 2.0;
 	public static double cameraCenterY = cameraHeight / 2.0;
 
-
-
 	private int targetOffsetX = 0;
-	
+
 	enum VisionMode {
 		ROTATE, MOVE, DONE, DISABLED;
 	}
+
 	private VisionMode visionMode = VisionMode.DISABLED;
 
 	class Kontours implements Comparable<Kontours> {
@@ -75,9 +74,9 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	//---------------------------------------------------------------
-	//   R O T A T E
-	//---------------------------------------------------------------
+	// ---------------------------------------------------------------
+	// R O T A T E
+	// ---------------------------------------------------------------
 	class VisionRotate extends PIDSubsystem {
 		public VisionRotate(double p, double i, double d) {
 			super("VisionRotate", p, i, d);
@@ -91,12 +90,13 @@ public class DriveTrain extends Subsystem {
 		public void enable() {
 			super.enable();
 			targetX = 0;
+			targetOffsetX = 0;
 		}
 
 		@Override
 		protected void initDefaultCommand() {
 		}
-		
+
 		@Override
 		protected double returnPIDInput() {
 			// Calculate the distance between the center of the screen and the
@@ -104,8 +104,10 @@ public class DriveTrain extends Subsystem {
 			if (Robot.instance.isAutonomous() || Robot.instance.isTest()) {
 				targetX = centerX;
 
-				// When close to the goal, change the target to be more to the left
-				// to help compensate for the difference in position between the camera
+				// When close to the goal, change the target to be more to the
+				// left
+				// to help compensate for the difference in position between the
+				// camera
 				// and the peg reflector.
 				if (centerWidth >= visionMoveTargetWidthSlow) {
 					targetOffsetX = 60;
@@ -119,8 +121,12 @@ public class DriveTrain extends Subsystem {
 			switch (visionMode) {
 			case ROTATE:
 				if (period > 10 && Math.abs(rotateAvgError) < maxRotateError) {
-					visionMode = VisionMode.MOVE;
 					pidRotateOutput = 0;
+					if (centerWidth >= visionMoveTargetWidthSlow) {
+						visionMode = VisionMode.DONE;
+					} else {
+						visionMode = VisionMode.MOVE;
+					}
 				} else {
 					pidRotateOutput = output;
 				}
@@ -133,9 +139,9 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	//---------------------------------------------------------------
-	//   M O V E
-	//---------------------------------------------------------------
+	// ---------------------------------------------------------------
+	// M O V E
+	// ---------------------------------------------------------------
 	class VisionMove extends PIDSubsystem {
 		public VisionMove(double p, double i, double d) {
 			super("VisionMove", p, i, d);
@@ -149,14 +155,17 @@ public class DriveTrain extends Subsystem {
 		protected double returnPIDInput() {
 			switch (visionMode) {
 			case MOVE:
-				if (centerWidth > visionMoveTargetWidth) {
-					visionMode = VisionMode.DONE;
+				// if (centerWidth > visionMoveTargetWidth) {
+				// visionMode = VisionMode.DONE;
+				// }
+				if (centerWidth >= visionMoveTargetWidthSlow) {
+					visionMode = VisionMode.ROTATE;
 				} else if ((Math.abs(targetX - cameraCenterX) > maxRotateErrorDurringMove)) {
 					visionRotate.getPIDController().setOutputRange(-maxRotateDuringMove, maxRotateDuringMove);
 					visionMode = VisionMode.ROTATE;
 				}
 				break;
-				
+
 			default:
 				break;
 			}
@@ -192,10 +201,10 @@ public class DriveTrain extends Subsystem {
 			visionMode = VisionMode.ROTATE;
 		}
 	}
-	
-	//---------------------------------------------------------------
-	//   D R I V E T R A I N
-	//---------------------------------------------------------------
+
+	// ---------------------------------------------------------------
+	// D R I V E T R A I N
+	// ---------------------------------------------------------------
 
 	Talon rightTalon;
 	Talon leftTalon;
@@ -270,10 +279,10 @@ public class DriveTrain extends Subsystem {
 	public void updatePIDPeriodic() {
 		getCenters();
 		++period;
-		
+
 		// Use exponential averaging to calc the target error.
 		rotateAvgError = rotateAvgError * .80 + (centerX - cameraCenterX) * .20;
-		
+
 		switch (visionMode) {
 		case ROTATE:
 		case MOVE:
@@ -289,14 +298,26 @@ public class DriveTrain extends Subsystem {
 			break;
 		}
 
-		System.out.printf("%d Mode=%s Rotate=%.1f Move=%.1f targetX=%.1f Width=%.1f rotateAvgErr=%.1f\n",
+		System.out.printf(
+				"%d Mode=%s Rotate=%.1f Move=%.1f targetX=%.1f Width=%.1f rotateAvgErr=%.1f targetOffSetX = %d\n",
 				System.currentTimeMillis(), visionMode, pidRotateOutput, pidMoveOutput, targetX, centerWidth,
-				rotateAvgError);
+				rotateAvgError, targetOffsetX);
+	}
+
+	public boolean isDone() {
+		if (visionMode == VisionMode.DONE) {
+			System.out.println("----------------The Pid Is Done -------------------");
+		}
+		return (visionMode == VisionMode.DONE);
+	}
+
+	public void onEnd() {
+		targetOffsetX = 0;
+		System.out.println("targetOffSetx == 0");
 	}
 
 	public void disablePIDPeriodic() {
 		visionMode = VisionMode.DISABLED;
-		targetOffsetX = 0;
 	}
 
 	public boolean getCenters() {
@@ -335,7 +356,7 @@ public class DriveTrain extends Subsystem {
 		}
 
 		centerX = kontours[targetIndex].x;
-		
+
 		centerX += targetOffsetX;
 		centerWidth = newWidth;
 

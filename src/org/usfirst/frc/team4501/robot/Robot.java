@@ -3,6 +3,7 @@ package org.usfirst.frc.team4501.robot;
 
 import org.usfirst.frc.team4501.robot.commands.AutoPIDEnable;
 import org.usfirst.frc.team4501.robot.commands.DriveArcade;
+import org.usfirst.frc.team4501.robot.commands.MiddleAutoCommand;
 import org.usfirst.frc.team4501.robot.subsystems.Arm;
 import org.usfirst.frc.team4501.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team4501.robot.subsystems.Lift;
@@ -44,7 +45,7 @@ public class Robot extends IterativeRobot {
     	instance = this;
 		oi = new OI();
         chooser = new SendableChooser();
-        chooser.addObject("My Auto", new AutoPIDEnable());
+        chooser.addObject("AutoFromMiddle", new MiddleAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
         shooter.resetEncoder();
     }

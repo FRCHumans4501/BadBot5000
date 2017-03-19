@@ -2,7 +2,7 @@ package org.usfirst.frc.team4501.robot;
 
 import org.usfirst.frc.team4501.robot.XboxController.Trigger;
 import org.usfirst.frc.team4501.robot.commands.ArmClose;
-import org.usfirst.frc.team4501.robot.commands.ArmGearNameThingie;
+import org.usfirst.frc.team4501.robot.commands.PositionArmForScore;
 import org.usfirst.frc.team4501.robot.commands.ArmOpen;
 import org.usfirst.frc.team4501.robot.commands.Intake;
 import org.usfirst.frc.team4501.robot.commands.IntakeStop;
@@ -40,7 +40,7 @@ public class OI {
 	Button armUp = new JoystickButton(controller, controller.BUTTON_Y);
 
 	public OI() {
-		armSetup.whenPressed(new ArmGearNameThingie());
+		armSetup.whenPressed(new PositionArmForScore());
 		armUp.whenPressed(new PosisionArmTop());
 
 		shiftHigh.whenPressed(new ShiftGearsHigh());
