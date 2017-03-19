@@ -1,17 +1,18 @@
 package org.usfirst.frc.team4501.robot;
 
 import org.usfirst.frc.team4501.robot.XboxController.Trigger;
-import org.usfirst.frc.team4501.robot.commands.ArmClose;
-import org.usfirst.frc.team4501.robot.commands.PositionArmForScore;
-import org.usfirst.frc.team4501.robot.commands.ArmOpen;
-import org.usfirst.frc.team4501.robot.commands.Intake;
-import org.usfirst.frc.team4501.robot.commands.IntakeStop;
-import org.usfirst.frc.team4501.robot.commands.LiftRobot;
-import org.usfirst.frc.team4501.robot.commands.PosisionArmTop;
-import org.usfirst.frc.team4501.robot.commands.ShiftGearsHigh;
-import org.usfirst.frc.team4501.robot.commands.ShiftGearsLow;
-import org.usfirst.frc.team4501.robot.commands.Shoot;
-import org.usfirst.frc.team4501.robot.commands.stopLiftBot;
+import org.usfirst.frc.team4501.robot.commands.arm.ArmClose;
+import org.usfirst.frc.team4501.robot.commands.arm.ArmOpen;
+import org.usfirst.frc.team4501.robot.commands.arm.PosisionArmTop;
+import org.usfirst.frc.team4501.robot.commands.arm.PositionArmBottom;
+import org.usfirst.frc.team4501.robot.commands.arm.PositionArmForScore;
+import org.usfirst.frc.team4501.robot.commands.drive.ShiftGearsHigh;
+import org.usfirst.frc.team4501.robot.commands.drive.ShiftGearsLow;
+import org.usfirst.frc.team4501.robot.commands.lift.LiftRobot;
+import org.usfirst.frc.team4501.robot.commands.lift.stopLiftBot;
+import org.usfirst.frc.team4501.robot.commands.shooter.Intake;
+import org.usfirst.frc.team4501.robot.commands.shooter.IntakeStop;
+import org.usfirst.frc.team4501.robot.commands.shooter.Shoot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -37,11 +38,14 @@ public class OI {
 	Button shoot = new JoystickButton(stick, BUTTON_2);
 	Button liftBot = new JoystickButton(stick, BUTTON_3);
 	Button armSetup = new JoystickButton(stick, BUTTON_6);
-	Button armUp = new JoystickButton(controller, controller.BUTTON_Y);
+	Button armUp = new JoystickButton(stick, BUTTON_7);
+	Button armDown = new JoystickButton(stick, BUTTON_8);
 
 	public OI() {
 		armSetup.whenPressed(new PositionArmForScore());
+		
 		armUp.whenPressed(new PosisionArmTop());
+		armDown.whenPressed(new PositionArmBottom());
 
 		shiftHigh.whenPressed(new ShiftGearsHigh());
 		shiftLow.whenPressed(new ShiftGearsLow());

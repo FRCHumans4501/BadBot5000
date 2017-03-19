@@ -1,9 +1,11 @@
 
 package org.usfirst.frc.team4501.robot;
 
-import org.usfirst.frc.team4501.robot.commands.AutoPIDEnable;
-import org.usfirst.frc.team4501.robot.commands.DriveArcade;
-import org.usfirst.frc.team4501.robot.commands.MiddleAutoCommand;
+import org.usfirst.frc.team4501.robot.commands.auto.AutoPIDEnable;
+import org.usfirst.frc.team4501.robot.commands.auto.LeftAutoCommand;
+import org.usfirst.frc.team4501.robot.commands.auto.MiddleAutoCommand;
+import org.usfirst.frc.team4501.robot.commands.auto.RightAutoCommand;
+import org.usfirst.frc.team4501.robot.commands.drive.DriveArcade;
 import org.usfirst.frc.team4501.robot.subsystems.Arm;
 import org.usfirst.frc.team4501.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team4501.robot.subsystems.Lift;
@@ -45,7 +47,9 @@ public class Robot extends IterativeRobot {
     	instance = this;
 		oi = new OI();
         chooser = new SendableChooser();
-        chooser.addObject("AutoFromMiddle", new MiddleAutoCommand());
+        chooser.addDefault("Auto From Middle", new MiddleAutoCommand());
+        chooser.addObject("Auto From Right", new RightAutoCommand());
+        chooser.addObject("Auto From Left", new LeftAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
         shooter.resetEncoder();
     }

@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4501.robot.subsystems;
 
 import org.usfirst.frc.team4501.robot.RobotMap;
-import org.usfirst.frc.team4501.robot.commands.ArmyAmer;
+import org.usfirst.frc.team4501.robot.commands.arm.ArmyAmer;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.usfirst.frc.team4501.robot.OI;
 import org.usfirst.frc.team4501.robot.Robot;
 import org.usfirst.frc.team4501.robot.RobotMap;
+import org.usfirst.frc.team4501.robot.commands.drive.DriveArcade;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -16,8 +17,6 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-
-import org.usfirst.frc.team4501.robot.commands.DriveArcade;
 
 /**
  *
@@ -38,7 +37,7 @@ public class DriveTrain extends Subsystem {
 	public static double moveKd = 0.3;
 	public static double maxMoveSpeed = .6;
 	public static double visionMoveTargetWidth = 40;
-	public static double visionMoveTargetWidthSlow = 23;
+	public static double visionMoveTargetWidthSlow = 25;
 
 	// Vision Constants.
 	public static double cameraWidth = 352;

@@ -1,8 +1,8 @@
 package org.usfirst.frc.team4501.robot.subsystems;
 
 import org.usfirst.frc.team4501.robot.RobotMap;
-import org.usfirst.frc.team4501.robot.commands.LiftRobot;
-import org.usfirst.frc.team4501.robot.commands.stopLiftBot;
+import org.usfirst.frc.team4501.robot.commands.lift.LiftRobot;
+import org.usfirst.frc.team4501.robot.commands.lift.stopLiftBot;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;

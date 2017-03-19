@@ -2,9 +2,9 @@ package org.usfirst.frc.team4501.robot.subsystems;
 
 import org.usfirst.frc.team4501.robot.Robot;
 import org.usfirst.frc.team4501.robot.RobotMap;
-import org.usfirst.frc.team4501.robot.commands.EnableShooterPID;
-import org.usfirst.frc.team4501.robot.commands.Shoot;
-import org.usfirst.frc.team4501.robot.commands.ShootStop;
+import org.usfirst.frc.team4501.robot.commands.auto.EnableShooterPID;
+import org.usfirst.frc.team4501.robot.commands.shooter.Shoot;
+import org.usfirst.frc.team4501.robot.commands.shooter.ShootStop;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
