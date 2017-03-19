@@ -26,7 +26,7 @@ public class ArmyAmer extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		double y = (Math.sin(.5 * oi.getShooterY()) / 1.7);
+		double y = (Math.sin(.8 * oi.getShooterY()));
 		/*
 		 * while (Robot.arm.armHigh()) {
 		 * System.out.println("Top Limit Switch Triggered"); if (y >= 0) {

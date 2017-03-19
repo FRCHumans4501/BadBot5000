@@ -36,7 +36,7 @@ public class OI {
 	Button intake = new JoystickButton(stick, TRIGGER);
 	Button shoot = new JoystickButton(stick, BUTTON_2);
 	Button liftBot = new JoystickButton(stick, BUTTON_3);
-	Button armSetup = new JoystickButton(controller, controller.BUTTON_X);
+	Button armSetup = new JoystickButton(stick, BUTTON_6);
 	Button armUp = new JoystickButton(controller, controller.BUTTON_Y);
 
 	public OI() {
@@ -76,10 +76,6 @@ public class OI {
 	}
 
 	public double getShooterY() {
-		/*
-		 * if (shooter.getY() >= .5) { return 0.5; } else if (shooter.getY() <=
-		 * -.3) { return -0.3; } else { return shooter.getY(); }
-		 */
 		return stick.getY();
 	}
 

@@ -26,7 +26,7 @@ public class PosisionArmTop extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
 		if (Robot.arm.armUp() && armUp == false) {
-			Robot.arm.armyAmer(-.25);
+			Robot.arm.armyAmer(-.8);
 		} else if (!Robot.arm.armUp()) {
 			armUp = true;
 			isDone = true;

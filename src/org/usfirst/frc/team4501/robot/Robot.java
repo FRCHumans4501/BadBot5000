@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team4501.robot;
 
+import org.usfirst.frc.team4501.robot.commands.AutoPIDEnable;
 import org.usfirst.frc.team4501.robot.commands.DriveArcade;
 import org.usfirst.frc.team4501.robot.subsystems.Arm;
 import org.usfirst.frc.team4501.robot.subsystems.DriveTrain;
@@ -43,7 +44,7 @@ public class Robot extends IterativeRobot {
     	instance = this;
 		oi = new OI();
         chooser = new SendableChooser();
-//        chooser.addObject("My Auto", new MyAutoCommand());
+        chooser.addObject("My Auto", new AutoPIDEnable());
         SmartDashboard.putData("Auto mode", chooser);
         shooter.resetEncoder();
     }
@@ -59,7 +60,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		//driveTrain.disablePIDPeriodic();
+		driveTrain.disablePIDPeriodic();
 		Scheduler.getInstance().run();
 	}
 
@@ -92,7 +93,6 @@ public class Robot extends IterativeRobot {
     	// schedule the autonomous command (example)
         if (autonomousCommand != null) autonomousCommand.start();
         
-        //driveTrain.initPID();
         System.out.println("Robot.autonomusInit()");
 	}
 
@@ -101,7 +101,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-    	//driveTrain.updatePIDPeriodic();
         Scheduler.getInstance().run();
 	}
 

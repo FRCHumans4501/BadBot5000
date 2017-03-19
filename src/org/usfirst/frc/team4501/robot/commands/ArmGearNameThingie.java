@@ -12,6 +12,6 @@ public class ArmGearNameThingie extends CommandGroup {
     public ArmGearNameThingie() {
     	requires(Robot.arm);
     	addSequential(new PosisionArmTop());
-    	addSequential(new MoveArmForTime(0.5, 0.20));
+    	addSequential(new MoveArmForTime(0.5, 0.4));
     }
 }

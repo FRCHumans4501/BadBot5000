@@ -23,10 +23,36 @@ import org.usfirst.frc.team4501.robot.commands.DriveArcade;
  *
  */
 public class DriveTrain extends Subsystem {
+	// Rotation Constants.
+	public static double rotateKp = 0.4;
+	public static double rotateKi = .2;
+	public static double rotateKd = 1.5;
+	public static double maxRotateSpeed = .6;
+	public static double maxRotateDuringMove = .55;
+	public static double maxRotateError = 10;
+	public static double maxRotateErrorDurringMove = 40;
+
+	// Move Constants.
+	public static double moveKp = 0.5;
+	public static double moveKi = .02;
+	public static double moveKd = 0.3;
+	public static double maxMoveSpeed = .6;
+	public static double visionMoveTargetWidth = 40;
+	public static double visionMoveTargetWidthSlow = 23;
+
+	// Vision Constants.
+	public static double cameraWidth = 352;
+	public static double cameraHeight = 240;
+	public static double cameraCenterX = cameraWidth / 2.0;
+	public static double cameraCenterY = cameraHeight / 2.0;
+
+
+
+	private int targetOffsetX = 0;
+	
 	enum VisionMode {
 		ROTATE, MOVE, DONE, DISABLED;
 	}
-
 	private VisionMode visionMode = VisionMode.DISABLED;
 
 	class Kontours implements Comparable<Kontours> {
@@ -49,6 +75,9 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
+	//---------------------------------------------------------------
+	//   R O T A T E
+	//---------------------------------------------------------------
 	class VisionRotate extends PIDSubsystem {
 		public VisionRotate(double p, double i, double d) {
 			super("VisionRotate", p, i, d);
@@ -67,15 +96,20 @@ public class DriveTrain extends Subsystem {
 		@Override
 		protected void initDefaultCommand() {
 		}
-
+		
 		@Override
 		protected double returnPIDInput() {
-			rotateAvgError = getPIDController().getAvgError();
-
 			// Calculate the distance between the center of the screen and the
 			// center of the target
 			if (Robot.instance.isAutonomous() || Robot.instance.isTest()) {
 				targetX = centerX;
+
+				// When close to the goal, change the target to be more to the left
+				// to help compensate for the difference in position between the camera
+				// and the peg reflector.
+				if (centerWidth >= visionMoveTargetWidthSlow) {
+					targetOffsetX = 60;
+				}
 			}
 			return targetX;
 		}
@@ -83,7 +117,6 @@ public class DriveTrain extends Subsystem {
 		@Override
 		protected void usePIDOutput(double output) {
 			switch (visionMode) {
-
 			case ROTATE:
 				if (period > 10 && Math.abs(rotateAvgError) < maxRotateError) {
 					visionMode = VisionMode.MOVE;
@@ -97,11 +130,12 @@ public class DriveTrain extends Subsystem {
 				pidRotateOutput = 0;
 				break;
 			}
-
 		}
-
 	}
 
+	//---------------------------------------------------------------
+	//   M O V E
+	//---------------------------------------------------------------
 	class VisionMove extends PIDSubsystem {
 		public VisionMove(double p, double i, double d) {
 			super("VisionMove", p, i, d);
@@ -113,28 +147,25 @@ public class DriveTrain extends Subsystem {
 
 		@Override
 		protected double returnPIDInput() {
-
 			switch (visionMode) {
-
 			case MOVE:
 				if (centerWidth > visionMoveTargetWidth) {
 					visionMode = VisionMode.DONE;
-				} else if ((Math.abs(rotateAvgError) > maxRotateErrorDurringMove)) {
-					visionRotate.getPIDController().setOutputRange(-maxAdjustedRotateSpeed, maxAdjustedRotateSpeed);
+				} else if ((Math.abs(targetX - cameraCenterX) > maxRotateErrorDurringMove)) {
+					visionRotate.getPIDController().setOutputRange(-maxRotateDuringMove, maxRotateDuringMove);
 					visionMode = VisionMode.ROTATE;
 				}
 				break;
+				
 			default:
 				break;
 			}
-
 			return centerWidth;
 		}
 
 		@Override
 		protected void usePIDOutput(double output) {
 			switch (visionMode) {
-
 			case MOVE:
 				pidMoveOutput = output;
 				break;
@@ -161,9 +192,10 @@ public class DriveTrain extends Subsystem {
 			visionMode = VisionMode.ROTATE;
 		}
 	}
-
-	// Put methods for controlling this subsystem
-	// here. Call these from Commands.
+	
+	//---------------------------------------------------------------
+	//   D R I V E T R A I N
+	//---------------------------------------------------------------
 
 	Talon rightTalon;
 	Talon leftTalon;
@@ -172,23 +204,6 @@ public class DriveTrain extends Subsystem {
 	DoubleSolenoid shifterSolenoid;
 
 	OI oi;
-	public static double rotateKp = 0.4;
-	public static double rotateKi = .2;
-	public static double rotateKd = 1.5;
-	public static double maxRotateSpeed = .6;
-	public static double maxAdjustedRotateSpeed = .4;
-	public static double moveKp = 0.5;
-	public static double moveKi = .02;
-	public static double moveKd = 0.3;
-	public static double maxMoveSpeed = .6;
-	public static double visionMoveTargetWidth = 60;
-	public static double maxRotateError = 15;
-	public static double maxRotateErrorDurringMove = 40;
-	public static double cameraWidth = 352;
-	public static double cameraHeight = 240;
-	public static double cameraCenterX = cameraWidth / 2.0;
-	public static double cameraCenterY = cameraHeight / 2.0;
-	public static double maxDeltaChange = .5;
 
 	VisionRotate visionRotate;
 	VisionMove visionMove;
@@ -210,8 +225,6 @@ public class DriveTrain extends Subsystem {
 
 	public DriveTrain() {
 		System.out.println("DRIVETRAIN IS ON!");
-		System.out.println("DRIVETRAIN IS ON!");
-		System.out.println("DRIVETRAIN IS ON!");
 		leftTalon = new Talon(RobotMap.LEFT_MOTOR);
 		rightTalon = new Talon(RobotMap.RIGHT_MOTOR);
 		System.out.println("DRIVETRAIN IS OFF!");
@@ -220,20 +233,16 @@ public class DriveTrain extends Subsystem {
 
 		shifterSolenoid = new DoubleSolenoid(RobotMap.SOLENOIDHIGH, RobotMap.SOLENOIDLOW);
 
-
 		visionRotate = new VisionRotate(rotateKp, rotateKi, rotateKd);
 		visionMove = new VisionMove(moveKp, moveKi, moveKd);
-
-
 	}
 
 	public void arcadeDrive(double speed, double speed2) {
-		driveTrain.arcadeDrive(speed, speed2);
-
+		driveTrain.arcadeDrive(speed, -speed2);
 	}
 
 	public void invertArcadeDrive(double speedx, double speedy) {
-		driveTrain.arcadeDrive(-speedx, -speedy);
+		driveTrain.arcadeDrive(-speedx, speedy);
 	}
 
 	public void shiftGearsHigh() {
@@ -246,10 +255,9 @@ public class DriveTrain extends Subsystem {
 
 	public void initDefaultCommand() {
 		setDefaultCommand(new DriveArcade());
-
 	}
-	
-	public void initPID() {
+
+	public void initPIDs() {
 		netTable = NetworkTable.getTable("GRIP/myContoursReport");
 		visionMode = VisionMode.ROTATE;
 		period = 0;
@@ -258,31 +266,39 @@ public class DriveTrain extends Subsystem {
 		centerWidth = Double.MIN_VALUE;
 		getCenters();
 	}
-	
+
 	public void updatePIDPeriodic() {
 		getCenters();
 		++period;
 		
+		// Use exponential averaging to calc the target error.
+		rotateAvgError = rotateAvgError * .80 + (centerX - cameraCenterX) * .20;
+		
 		switch (visionMode) {
 		case ROTATE:
 		case MOVE:
-			arcadeDrive(-pidMoveOutput, -pidRotateOutput);
+			if (centerWidth >= visionMoveTargetWidthSlow) {
+				arcadeDrive((-pidMoveOutput * .75), -pidRotateOutput);
+			} else {
+				arcadeDrive(-pidMoveOutput, -pidRotateOutput);
+			}
 			break;
 
 		default:
 			arcadeDrive(0, 0);
 			break;
 		}
-		
-		System.out.printf("%.2f Mode=%s Rotate=%.1f Move=%.1f targetX=%.1f Width=%.1f rotateAvgErr=%.1f\n",
-				System.currentTimeMillis() / 1000., visionMode, pidRotateOutput, pidMoveOutput, targetX, centerWidth,
+
+		System.out.printf("%d Mode=%s Rotate=%.1f Move=%.1f targetX=%.1f Width=%.1f rotateAvgErr=%.1f\n",
+				System.currentTimeMillis(), visionMode, pidRotateOutput, pidMoveOutput, targetX, centerWidth,
 				rotateAvgError);
 	}
-	
+
 	public void disablePIDPeriodic() {
 		visionMode = VisionMode.DISABLED;
+		targetOffsetX = 0;
 	}
-	
+
 	public boolean getCenters() {
 		double[] tableX = netTable.getNumberArray("centerX", defaultValues);
 		double[] tableY = netTable.getNumberArray("centerY", defaultValues);
@@ -314,18 +330,14 @@ public class DriveTrain extends Subsystem {
 			}
 		}
 		double newWidth = kontours[targetIndex].width;
-		if (centerWidth == Double.MIN_VALUE){
+		if (centerWidth == Double.MIN_VALUE) {
 			centerWidth = newWidth;
 		}
-//		double deltaChange = Math.abs((centerWidth-newWidth)/centerWidth);
-//		if (deltaChange > maxDeltaChange) {
-//			System.out.println("Invalid Width: " + newWidth);
-//			return false;
-//		}
-		
+
 		centerX = kontours[targetIndex].x;
-		centerWidth = newWidth;
 		
+		centerX += targetOffsetX;
+		centerWidth = newWidth;
 
 		return true;
 	}
